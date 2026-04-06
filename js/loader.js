@@ -8,11 +8,11 @@ async function loadComponent(id, file){
 document.addEventListener("DOMContentLoaded", ()=>{
 
     if(document.getElementById("header")){
-        loadComponent("header","/components/header.html");
+        loadComponent("header","components/header.html");
     }
 
     if(document.getElementById("footer")){
-        loadComponent("footer","/components/footer.html");
+        loadComponent("footer","components/footer.html");
     }
 
 });
