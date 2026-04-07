@@ -162,6 +162,7 @@ width:100%;
 margin:20px auto;
 display:block;
 border-radius:6px;
+pointer-events: none;
 }
 
 /* pill buttons */
@@ -222,13 +223,14 @@ width:100%;
 max-width:1080px;
 display:flex;
 flex-direction:column;
-gap:12px;
+gap:14px;
 }
 
 .carousel-controls{
 display:flex;
 gap:10px;
 justify-content:center;
+order:2;
 }
 
 .carousel-btn{
@@ -241,8 +243,16 @@ gap:24px;
 overflow-x:auto;
 scroll-snap-type:x mandatory;
 scroll-padding-inline:calc(50% - min(38vw, 210px));
-padding:18px max(12px, calc(50% - min(38vw, 210px))) 24px;
+padding:18px max(12px, calc(50% - min(38vw, 210px))) 12px;
 -webkit-overflow-scrolling:touch;
+cursor:grab;
+user-select:none;
+order:1;
+}
+
+.project-track.is-dragging{
+cursor:grabbing;
+scroll-snap-type:none;
 }
 
 .project-track::-webkit-scrollbar{
