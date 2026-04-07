@@ -1,4 +1,3 @@
-
 function initBackButton(){
 const backButton=document.getElementById("backButton");
 if(!backButton) return;
