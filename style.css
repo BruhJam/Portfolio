@@ -30,12 +30,16 @@ text-align:center;
 .header{
 background:#141414;
 padding:0px 0;
-border-bottom:1px solid #333;
+border-bottom:3px solid #333;
+border-bottom-left-radius: 40px;
+border-bottom-right-radius: 40px;
 }
 
 .footer{
 background:#1f1f1f;
-border-bottom:1px solid #333;
+border-bottom:3px solid #333;
+border-bottom-left-radius: 60px;
+border-bottom-right-radius: 60px;
 }
 
 .tagline{
@@ -69,6 +73,8 @@ gap:20px;
 padding-bottom: 20px;
 border-color: #141414;
 border:2.5px solid #141414;
+padding-left: 20px;
+padding-right: 20px;
 }
 
 .center-text{
@@ -152,4 +158,9 @@ cursor: pointer;
 position:fixed;
 top:20px;
 left:20px;
+}
+
+.icon{
+    max-width: 20px;
+    height: auto;
 }
