@@ -24,6 +24,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
     }
 
     if(document.getElementById("pheader")){
-        loadComponent("pheader","../../../components/pheader.html");
+        loadComponent("pheader","../../components/pheader.html");
     }
 });
