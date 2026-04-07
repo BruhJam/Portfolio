@@ -21,8 +21,13 @@
 
 <h2>Featured Projects</h2>
 
-<div class="project-grid">
+<div class="project-carousel" tabindex="0" aria-label="Featured projects carousel">
+<div class="carousel-controls">
+<button class="pill carousel-btn" data-action="prev" aria-label="Previous project">←</button>
+<button class="pill carousel-btn" data-action="next" aria-label="Next project">→</button>
+</div>
 
+<div class="project-track">
 
 <div class="project-card">
 <img src="assets/project.png">
@@ -45,6 +50,7 @@
 <a class="pill" href="projects/game_programming/combat.html">View Project →</a>
 </div>
 
+</div>
 </div>
 
 <a class="pill" href="mainPages/projects.html">View All Projects →</a>
@@ -99,6 +105,7 @@ C#, C++, Unity, AI Systems, Physics Systems, Tools Development
 <script src="js/nav.js"></script>
 <script src="js/loader.js"></script>
 <script src="js/indexHeader.js"></script>
+<script src="js/featuredProjects.js"></script>
 
 </body>
 </html>
