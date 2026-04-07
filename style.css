@@ -106,6 +106,8 @@ gap:12px;
 justify-content:center;
 flex-wrap:wrap;
 margin-top:0px;
+padding-left: 5px;
+padding-right: 5px;
 }
 
 .section{

@@ -88,7 +88,7 @@ if(!backButton) return;
 
 /* editable settings */
 
-const maxwidth = 650;   // distance allowed before pushing (px)
+const maxwidth = 560;   // distance allowed before pushing (px)
 const pushAmount = 60;         // how far to push down (px)
 
 /* hide button if no history */
@@ -100,12 +100,16 @@ if(history.length <= 1){
 /* detect overlap with header */
 
 if(window.innerWidth <= maxwidth && canMoveDown){
-    console.log("Push down " + window.innerWidth);
     backButton.style.top = (20 + pushAmount) + "px";
+    if(window.innerWidth <= 420)
+        backButton.style.left = (40) + "px";
+    else
+        backButton.style.left = (20) + "px";
 }
 else{
     console.log("Push Up");
     backButton.style.top = (20) + "px";
+    backButton.style.left = (20) + "px";
 }
 
 backButton.addEventListener("click",()=>{
