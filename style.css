@@ -27,12 +27,28 @@ padding:40px 10px;
 text-align:center;
 }
 
+.pcontainer{
+max-width:1200px;
+margin:0 auto;
+padding:10px 10px;
+text-align:center;
+}
+
 .header{
 background:#141414;
 padding:0px 0;
 border-bottom:3px solid #333;
 border-bottom-left-radius: 40px;
 border-bottom-right-radius: 40px;
+}
+
+.pheader{
+background:#141414;
+margin-top: 10px;
+margin-left: 5px;
+margin-right: 5px;
+border-bottom:3px solid #333;
+border-radius: 40px;
 }
 
 .footer{
@@ -52,6 +68,14 @@ gap:12px;
 justify-content:center;
 flex-wrap:wrap;
 margin-top:15px;
+}
+
+.pnav{
+display:flex;
+gap:12px;
+justify-content:center;
+flex-wrap:wrap;
+margin-top:0px;
 }
 
 .section{
