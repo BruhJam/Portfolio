@@ -32,7 +32,7 @@ text-align:center;
 .pcontainer{
 max-width:1200px;
 margin:0 auto;
-padding:10px 10px;
+padding:10px 1px;
 text-align:center;
 }
 
@@ -184,6 +184,14 @@ cursor: pointer;
 position:fixed;
 top:20px;
 left:20px;
+}
+
+@media (max-width: 650px){
+.back-btn{
+position:static;
+display:inline-flex;
+margin:12px 0 0 12px;
+}
 }
 
 .icon{
