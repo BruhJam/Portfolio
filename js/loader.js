@@ -30,4 +30,8 @@ document.addEventListener("DOMContentLoaded", ()=>{
     if(document.getElementById("mfooter")){
         loadComponent("mfooter",["../components/footer.html","../../components/footer.html","components/footer.html"]);
     }
+
+    if(document.getElementById("pheader")){
+        loadComponent("pheader","../../components/pheader.html");
+    }
 });
