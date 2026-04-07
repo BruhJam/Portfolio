@@ -15,4 +15,11 @@ document.addEventListener("DOMContentLoaded", ()=>{
         loadComponent("footer","components/footer.html");
     }
 
+    if(document.getElementById("mheader")){
+        loadComponent("mheader","../components/header.html");
+    }
+
+    if(document.getElementById("mfooter")){
+        loadComponent("mfooter","../components/footer.html");
+    }
 });
