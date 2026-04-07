@@ -186,8 +186,15 @@ top:20px;
 left:20px;
 }
 
+.pback-btn{
+cursor: pointer;
+position:fixed;
+top:20px;
+left:20px;
+}
+
 @media (max-width: 650px){
-.back-btn{
+.pback-btn{
 position:static;
 display:inline-flex;
 margin:12px 0 0 12px;
