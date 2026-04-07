@@ -16,8 +16,16 @@ document.body.appendChild(stickyHeader);
 return stickyHeader;
 }
 
-function initIndexStickyHeader() {
-const headerMount = document.getElementById("header");
+function initIndexStickyHeader(){
+    const headerMount = document.getElementById("header");
+    const headerMount1 = document.getElementById("mheader");
+
+    _initIndexStickyHeader(headerMount);
+    _initIndexStickyHeader(headerMount1);
+}
+
+function _initIndexStickyHeader(headerMount) {
+//const headerMount = document.getElementById("header", "mheader");
 if (!headerMount) return;
 
 let initialized = false;
