@@ -1,3 +1,5 @@
+canMoveDown = false;
+
 function createStickyHeader() {
 const stickyHeader = document.createElement("header");
 stickyHeader.className = "sheader";
@@ -42,11 +44,19 @@ const stickyHeader = createStickyHeader();
 
 const updateStickyState = () => {
 const threshold = headerElement.offsetHeight;
-if (window.scrollY > threshold) {
-stickyHeader.classList.add("is-visible");
-} else {
-stickyHeader.classList.remove("is-visible");
-}
+    if (window.scrollY > threshold) {
+        stickyHeader.classList.add("is-visible");
+    } else {
+        stickyHeader.classList.remove("is-visible");
+    }
+
+    if (window.scrollY > threshold - 200) {
+        canMoveDown = true;
+    } else {
+        canMoveDown = false;
+    }
+
+    initBackButton();
 };
 
 updateStickyState();
@@ -68,3 +78,40 @@ observer.observe(headerMount, { childList: true, subtree: true });
 }
 
 document.addEventListener("DOMContentLoaded", initIndexStickyHeader);
+
+function initBackButton(){
+
+const backButton = document.getElementById("backButton");
+const _mheader = document.getElementById("mheader");
+if(!_mheader) return;
+if(!backButton) return;
+
+/* editable settings */
+
+const maxwidth = 650;   // distance allowed before pushing (px)
+const pushAmount = 60;         // how far to push down (px)
+
+/* hide button if no history */
+
+if(history.length <= 1){
+    backButton.style.display = "none";
+}
+
+/* detect overlap with header */
+
+if(window.innerWidth <= maxwidth && canMoveDown){
+    console.log("Push down " + window.innerWidth);
+    backButton.style.top = (20 + pushAmount) + "px";
+}
+else{
+    console.log("Push Up");
+    backButton.style.top = (20) + "px";
+}
+
+backButton.addEventListener("click",()=>{
+    history.back();
+});
+
+}
+
+document.addEventListener("DOMContentLoaded",initBackButton);
