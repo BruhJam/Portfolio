@@ -107,7 +107,6 @@ if(window.innerWidth <= maxwidth && canMoveDown){
         backButton.style.left = (20) + "px";
 }
 else{
-    console.log("Push Up");
     backButton.style.top = (20) + "px";
     backButton.style.left = (20) + "px";
 }

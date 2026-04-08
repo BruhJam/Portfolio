@@ -176,7 +176,7 @@ justify-content:center;
 padding:10px 20px;
 border-radius:999px;
 background:rgba(255,255,255,var(--pill-alpha));
-border:1px solid rgba(255,255,255,0.18);
+border:2px solid rgba(255,255,255,0.5);
 color:var(--accent-color);
 text-decoration:none;
 font-weight:500;
@@ -298,4 +298,38 @@ padding:14px max(8px, calc(50% - min(42vw, 185px))) 18px;
 flex-basis:min(84vw, 360px);
 width:min(84vw, 360px);
 }
+}
+
+.doc-content{
+max-width:800px;
+margin:auto;
+line-height:1.7;
+}
+
+.doc-table{
+border-collapse:collapse;
+width:100%;
+}
+
+.doc-table td{
+border:1px solid #444;
+color:inherit;
+padding:10px;
+}
+
+.doc-image-left{
+float:left;
+margin-right:20px;
+margin-bottom:10px;
+}
+
+.doc-image-right{
+float:right;
+margin-left:20px;
+margin-bottom:10px;
+}
+
+.doc-image-center{
+display:block;
+margin:auto;
 }
