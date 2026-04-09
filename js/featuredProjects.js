@@ -30,6 +30,7 @@
 
     const allCards = Array.from(track.querySelectorAll('.project-card'));
     let currentRealIndex = 0;
+    let currentDomIndex = cloneCount;
 
     function getRealIndex(card) {
       const realIndex = Number(card.dataset.realIndex);
@@ -59,6 +60,8 @@
       });
 
       currentRealIndex = getRealIndex(focusedCard);
+
+      currentDomIndex = allCards.indexOf(focusedCard);
 
       allCards.forEach((card) => {
         card.classList.toggle('is-focused', card === focusedCard);
@@ -96,11 +99,7 @@
     }
 
     function handleWrapReset() {
-      const maxScrollLeft = track.scrollWidth - track.clientWidth;
-      const leftThreshold = 4;
-      const rightThreshold = maxScrollLeft - 4;
-
-      if (track.scrollLeft <= leftThreshold || track.scrollLeft >= rightThreshold) {
+      if (currentDomIndex < cloneCount || currentDomIndex >= cloneCount + originalCards.length) {
         moveToCenterSet();
       }
     }
@@ -111,7 +110,9 @@
       setFocus();
       scrollTimer = setTimeout(() => {
         setFocus();
-        handleWrapReset();
+        if (!isDragging && !pointerActive) {
+          handleWrapReset();
+        }
       }, 80);
     });
 
@@ -148,15 +149,15 @@
       activePointerId = event.pointerId;
       dragStartX = event.clientX;
       dragStartScrollLeft = track.scrollLeft;
+      track.classList.add('is-dragging');
     });
 
     track.addEventListener('pointermove', (event) => {
       if (!pointerActive || event.pointerId !== activePointerId) return;
 
       const delta = event.clientX - dragStartX;
-      if (!isDragging && Math.abs(delta) > 6) {
+      if (!isDragging && Math.abs(delta) > 4) {
         isDragging = true;
-        track.classList.add('is-dragging');
         track.setPointerCapture(event.pointerId);
       }
 
@@ -169,11 +170,14 @@
     function endDrag(event) {
       if (!pointerActive || event.pointerId !== activePointerId) return;
 
+      track.classList.remove('is-dragging');
+
+      if (isDragging && track.hasPointerCapture(event.pointerId)) {
+        track.releasePointerCapture(event.pointerId);
+      }
+
+
       if (isDragging) {
-        track.classList.remove('is-dragging');
-        if (track.hasPointerCapture(event.pointerId)) {
-          track.releasePointerCapture(event.pointerId);
-        }
         setFocus();
         handleWrapReset();
       }
