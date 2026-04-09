@@ -65,6 +65,11 @@
       });
     }
 
+    function centerCardInTrack(card, behavior = 'smooth') {
+      const targetLeft = card.offsetLeft - (track.clientWidth - card.offsetWidth) / 2;
+      track.scrollTo({ left: targetLeft, behavior });
+    }
+
     function scrollToRealIndex(realIndex, behavior = 'smooth') {
       const normalizedIndex = (realIndex + originalCards.length) % originalCards.length;
       currentRealIndex = normalizedIndex;
@@ -77,11 +82,7 @@
 
       if (!target) return;
 
-      target.scrollIntoView({
-        behavior,
-        inline: 'center',
-        block: 'nearest'
-      });
+      centerCardInTrack(target, behavior);
 
       allCards.forEach((card) => {
         card.classList.toggle('is-focused', card === target);
@@ -91,7 +92,7 @@
     function moveToCenterSet() {
       const middleCard = allCards[cloneCount + currentRealIndex];
       if (!middleCard) return;
-      middleCard.scrollIntoView({ behavior: 'auto', inline: 'center', block: 'nearest' });
+      centerCardInTrack(middleCard, 'auto');
     }
 
     function handleWrapReset() {
@@ -134,43 +135,55 @@
     });
 
     let isDragging = false;
+    let pointerActive = false;
+    let activePointerId = null;
     let dragStartX = 0;
     let dragStartScrollLeft = 0;
 
     track.addEventListener('pointerdown', (event) => {
       if (event.pointerType === 'mouse' && event.button !== 0) return;
+      if (event.target.closest('a, button')) return;
 
-      isDragging = true;
+      pointerActive = true;
+      activePointerId = event.pointerId;
       dragStartX = event.clientX;
       dragStartScrollLeft = track.scrollLeft;
-      track.classList.add('is-dragging');
-      track.setPointerCapture(event.pointerId);
     });
 
     track.addEventListener('pointermove', (event) => {
-      if (!isDragging) return;
+      if (!pointerActive || event.pointerId !== activePointerId) return;
 
       const delta = event.clientX - dragStartX;
+      if (!isDragging && Math.abs(delta) > 6) {
+        isDragging = true;
+        track.classList.add('is-dragging');
+        track.setPointerCapture(event.pointerId);
+      }
+
+      if (!isDragging) return;
+
+      event.preventDefault();
       track.scrollLeft = dragStartScrollLeft - delta;
     });
 
     function endDrag(event) {
-      if (!isDragging) return;
+      if (!pointerActive || event.pointerId !== activePointerId) return;
+
+      if (isDragging) {
+        track.classList.remove('is-dragging');
+        if (track.hasPointerCapture(event.pointerId)) {
+          track.releasePointerCapture(event.pointerId);
+        }
+        setFocus();
+        handleWrapReset();
+      }
       isDragging = false;
-      track.classList.remove('is-dragging');
-      track.releasePointerCapture(event.pointerId);
-      setFocus();
-      handleWrapReset();
+      pointerActive = false;
+      activePointerId = null;
     }
 
     track.addEventListener('pointerup', endDrag);
     track.addEventListener('pointercancel', endDrag);
-    track.addEventListener('mouseleave', () => {
-      if (!isDragging) return;
-      isDragging = false;
-      track.classList.remove('is-dragging');
-      setFocus();
-    });
 
     requestAnimationFrame(() => {
       scrollToRealIndex(0, 'auto');

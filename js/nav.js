@@ -1,29 +1,44 @@
 function initBackButton(){
-const backButton=document.getElementById("backButton");
+
+const backButton = document.getElementById("backButton");
 if(!backButton) return;
 
-_resize();
+/* resize behaviour */
 
-window.addEventListener('resize', () => {
-  _resize();
-});
-
-function _resize(){
+function resize(){
     if(window.innerWidth <= 650){
         backButton.textContent = "←";
-    }
-    else{
+    }else{
         backButton.textContent = "← Back";
     }
 }
 
-if(history.length<=1){
-backButton.style.display="none";
+resize();
+window.addEventListener("resize", resize);
+
+/* hide button on homepage */
+
+if(
+window.location.pathname === "/Portfolio/" ||
+window.location.pathname.endsWith("index.html")
+){
+backButton.style.display = "none";
 }
 
-backButton.addEventListener("click",()=>{
-history.back();
+/* back button behaviour */
+
+backButton.addEventListener("click", ()=>{
+
+const ref = document.referrer;
+
+if(ref && ref.includes(window.location.hostname)){
+    history.back();
+}else{
+    window.location.href = "/Portfolio/";
+}
+
 });
+
 }
 
-document.addEventListener("DOMContentLoaded",initBackButton);
+document.addEventListener("DOMContentLoaded", initBackButton);

@@ -111,9 +111,9 @@ else{
     backButton.style.left = (20) + "px";
 }
 
-backButton.addEventListener("click",()=>{
-    history.back();
-});
+// backButton.addEventListener("click",()=>{
+//     history.back(-1);
+// });
 
 }
 
