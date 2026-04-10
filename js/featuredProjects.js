@@ -14,47 +14,38 @@ const prevBtn = document.querySelector(".fp-prev")
 const nextBtn = document.querySelector(".fp-next")
 
 let index = 0
-let cardWidth = 0
-
 let startX = 0
 let currentX = 0
 let dragOffset = 0
-
 let velocity = 0
 let isDragging = false
 
 
-/* ===== INFINITE CLONING ===== */
+/* ===== INFINITE SETUP ===== */
 
 if(ENABLE_INFINITE){
 
-const first = cards[0].cloneNode(true)
-const last = cards[cards.length-1].cloneNode(true)
+const clonesBefore = []
+const clonesAfter = []
 
-track.appendChild(first)
-track.insertBefore(last, cards[0])
+cards.forEach(card=>{
+clonesBefore.push(card.cloneNode(true))
+clonesAfter.push(card.cloneNode(true))
+})
+
+clonesBefore.reverse().forEach(c=>track.insertBefore(c,track.firstChild))
+clonesAfter.forEach(c=>track.appendChild(c))
 
 cards = Array.from(document.querySelectorAll(".fp-card"))
-index = 1
-requestAnimationFrame(() => updatePosition(false))
+
+index = clonesBefore.length
 
 }
 
 
-/* ===== MEASURE CARD ===== */
+/* ===== CENTER CARD ===== */
 
-function measure(){
-
-cardWidth = cards[0].offsetWidth + 40
-
-}
-
-window.addEventListener("resize",measure)
-
-
-/* ===== UPDATE POSITION ===== */
-
-function updatePosition(animated=true){
+function centerCard(animated=true){
 
 if(animated) track.style.transition="transform 0.45s ease"
 else track.style.transition="none"
@@ -74,51 +65,51 @@ card.classList.add("active")
 }
 
 
-/* ===== FIX INFINITE JUMP ===== */
+/* ===== LOOP FIX ===== */
 
-function fixLoop(){
+function checkLoop(){
 
 if(!ENABLE_INFINITE) return
 
-if(index <= 0){
+const realCount = cards.length/3
 
-track.style.transition="none"
-index = cards.length-2
-updatePosition(false)
+if(index >= realCount*2){
 
-}
-
-if(index >= cards.length-1){
-
-track.style.transition="none"
-index = 1
-updatePosition(false)
+index -= realCount
+centerCard(false)
 
 }
 
+if(index < realCount){
+
+index += realCount
+centerCard(false)
+
+}
+
 }
 
 
-/* ===== BUTTONS ===== */
+/* ===== NAVIGATION ===== */
 
 function next(){
 
 index++
-updatePosition()
-setTimeout(fixLoop,450)
+centerCard()
+setTimeout(checkLoop,460)
 
 }
 
 function prev(){
 
 index--
-updatePosition()
-setTimeout(fixLoop,450)
+centerCard()
+setTimeout(checkLoop,460)
 
 }
 
-nextBtn.onclick=next
-prevBtn.onclick=prev
+nextBtn.onclick = next
+prevBtn.onclick = prev
 
 
 /* ===== DRAG START ===== */
@@ -127,14 +118,14 @@ function startDrag(e){
 
 if(!ENABLE_TOUCH_PHYSICS) return
 
-isDragging=true
+isDragging = true
 track.classList.add("dragging")
 
 startX = e.type.includes("mouse")
 ? e.pageX
 : e.touches[0].clientX
 
-velocity=0
+velocity = 0
 track.style.transition="none"
 
 }
@@ -150,7 +141,7 @@ currentX = e.type.includes("mouse")
 ? e.pageX
 : e.touches[0].clientX
 
-dragOffset = currentX-startX
+dragOffset = currentX - startX
 
 const card = cards[index]
 
@@ -172,19 +163,18 @@ velocity = dragOffset
 function endDrag(){
 
 if(!isDragging) return
-isDragging=false
 
+isDragging=false
 track.classList.remove("dragging")
 
-if(Math.abs(dragOffset) > cardWidth/4){
+if(Math.abs(dragOffset) > 120){
 
 if(dragOffset < 0) next()
 else prev()
 
-}
-else{
+}else{
 
-updatePosition()
+centerCard()
 
 }
 
@@ -193,16 +183,16 @@ updatePosition()
 
 if(ENABLE_MOMENTUM){
 
-if(Math.abs(velocity)>120){
+if(Math.abs(velocity) > 260){
 
-if(velocity<0) next()
+if(velocity < 0) next()
 else prev()
 
 }
 
 }
 
-dragOffset=0
+dragOffset = 0
 
 }
 
@@ -221,12 +211,10 @@ window.addEventListener("touchend",endDrag)
 
 /* ===== INIT ===== */
 
-window.addEventListener("load", () => {
+window.addEventListener("load",()=>{
 
-measure()
-
-requestAnimationFrame(() => {
-updatePosition(false)
+requestAnimationFrame(()=>{
+centerCard(false)
 })
 
 })
