@@ -1,208 +1,232 @@
-(function () {
-  function initFeaturedProjects() {
-    const carousel = document.querySelector('.project-carousel');
-    const track = document.querySelector('.project-track');
-    if (!carousel || !track) return;
+/* ===== SETTINGS ===== */
 
-    const originalCards = Array.from(track.querySelectorAll('.project-card'));
-    const prevBtn = carousel.querySelector('[data-action="prev"]');
-    const nextBtn = carousel.querySelector('[data-action="next"]');
-    if (!originalCards.length) return;
-
-    const cloneCount = originalCards.length;
-
-    const prependFragment = document.createDocumentFragment();
-    originalCards.forEach((card) => {
-      const clone = card.cloneNode(true);
-      clone.dataset.clone = 'true';
-      prependFragment.appendChild(clone);
-    });
-
-    const appendFragment = document.createDocumentFragment();
-    originalCards.forEach((card) => {
-      const clone = card.cloneNode(true);
-      clone.dataset.clone = 'true';
-      appendFragment.appendChild(clone);
-    });
-
-    track.prepend(prependFragment);
-    track.append(appendFragment);
-
-    const allCards = Array.from(track.querySelectorAll('.project-card'));
-    let currentRealIndex = 0;
-    let currentDomIndex = cloneCount;
-
-    function getRealIndex(card) {
-      const realIndex = Number(card.dataset.realIndex);
-      return Number.isNaN(realIndex) ? 0 : realIndex;
-    }
-
-    allCards.forEach((card, index) => {
-      card.dataset.realIndex = String(index % originalCards.length);
-    });
-
-    function setFocus() {
-      const trackRect = track.getBoundingClientRect();
-      const center = trackRect.left + trackRect.width / 2;
-
-      let focusedCard = allCards[0];
-      let closestDistance = Number.POSITIVE_INFINITY;
-
-      allCards.forEach((card) => {
-        const rect = card.getBoundingClientRect();
-        const cardCenter = rect.left + rect.width / 2;
-        const distance = Math.abs(cardCenter - center);
-
-        if (distance < closestDistance) {
-          closestDistance = distance;
-          focusedCard = card;
-        }
-      });
-
-      currentRealIndex = getRealIndex(focusedCard);
-
-      currentDomIndex = allCards.indexOf(focusedCard);
-
-      allCards.forEach((card) => {
-        card.classList.toggle('is-focused', card === focusedCard);
-      });
-    }
-
-    function centerCardInTrack(card, behavior = 'smooth') {
-      const targetLeft = card.offsetLeft - (track.clientWidth - card.offsetWidth) / 2;
-      track.scrollTo({ left: targetLeft, behavior });
-    }
-
-    function scrollToRealIndex(realIndex, behavior = 'smooth') {
-      const normalizedIndex = (realIndex + originalCards.length) % originalCards.length;
-      currentRealIndex = normalizedIndex;
-
-      const target = allCards.find((card, index) => {
-        const idx = getRealIndex(card);
-        const inMiddleSet = index >= cloneCount && index < cloneCount + originalCards.length;
-        return idx === normalizedIndex && inMiddleSet;
-      });
-
-      if (!target) return;
-
-      centerCardInTrack(target, behavior);
-
-      allCards.forEach((card) => {
-        card.classList.toggle('is-focused', card === target);
-      });
-    }
-
-    function moveToCenterSet() {
-      const middleCard = allCards[cloneCount + currentRealIndex];
-      if (!middleCard) return;
-      centerCardInTrack(middleCard, 'auto');
-    }
-
-    function handleWrapReset() {
-      if (currentDomIndex < cloneCount || currentDomIndex >= cloneCount + originalCards.length) {
-        moveToCenterSet();
-      }
-    }
-
-    let scrollTimer;
-    track.addEventListener('scroll', () => {
-      clearTimeout(scrollTimer);
-      setFocus();
-      scrollTimer = setTimeout(() => {
-        setFocus();
-        if (!isDragging && !pointerActive) {
-          handleWrapReset();
-        }
-      }, 80);
-    });
-
-    prevBtn?.addEventListener('click', () => {
-      scrollToRealIndex(currentRealIndex - 1);
-    });
-
-    nextBtn?.addEventListener('click', () => {
-      scrollToRealIndex(currentRealIndex + 1);
-    });
-
-    carousel.addEventListener('keydown', (event) => {
-      if (event.key === 'ArrowLeft') {
-        event.preventDefault();
-        scrollToRealIndex(currentRealIndex - 1);
-      }
-      if (event.key === 'ArrowRight') {
-        event.preventDefault();
-        scrollToRealIndex(currentRealIndex + 1);
-      }
-    });
-
-    let isDragging = false;
-    let pointerActive = false;
-    let activePointerId = null;
-    let dragStartX = 0;
-    let dragStartScrollLeft = 0;
-
-    track.addEventListener('pointerdown', (event) => {
-      if (event.pointerType === 'mouse' && event.button !== 0) return;
-      if (event.target.closest('a, button')) return;
-
-      pointerActive = true;
-      activePointerId = event.pointerId;
-      dragStartX = event.clientX;
-      dragStartScrollLeft = track.scrollLeft;
-      track.classList.add('is-dragging');
-    });
-
-    track.addEventListener('pointermove', (event) => {
-      if (!pointerActive || event.pointerId !== activePointerId) return;
-
-      const delta = event.clientX - dragStartX;
-      if (!isDragging && Math.abs(delta) > 4) {
-        isDragging = true;
-        track.setPointerCapture(event.pointerId);
-      }
-
-      if (!isDragging) return;
-
-      event.preventDefault();
-      track.scrollLeft = dragStartScrollLeft - delta;
-    });
-
-    function endDrag(event) {
-      if (!pointerActive || event.pointerId !== activePointerId) return;
-
-      track.classList.remove('is-dragging');
-
-      if (isDragging && track.hasPointerCapture(event.pointerId)) {
-        track.releasePointerCapture(event.pointerId);
-      }
+const ENABLE_INFINITE = true
+const ENABLE_MOMENTUM = true
+const ENABLE_TOUCH_PHYSICS = true
 
 
-      if (isDragging) {
-        setFocus();
-        handleWrapReset();
-      }
-      isDragging = false;
-      pointerActive = false;
-      activePointerId = null;
-    }
+/* ===== ELEMENTS ===== */
 
-    track.addEventListener('pointerup', endDrag);
-    track.addEventListener('pointercancel', endDrag);
+const track = document.querySelector(".fp-track")
+let cards = Array.from(document.querySelectorAll(".fp-card"))
 
-    requestAnimationFrame(() => {
-      scrollToRealIndex(0, 'auto');
-      setFocus();
-    });
+const prevBtn = document.querySelector(".fp-prev")
+const nextBtn = document.querySelector(".fp-next")
 
-    window.addEventListener('resize', () => {
-      moveToCenterSet();
-      setFocus();
-    });
-  }
+let index = 0
+let cardWidth = 0
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initFeaturedProjects);
-  } else {
-    initFeaturedProjects();
-  }
-})();
+let startX = 0
+let currentX = 0
+let dragOffset = 0
+
+let velocity = 0
+let isDragging = false
+
+
+/* ===== INFINITE CLONING ===== */
+
+if(ENABLE_INFINITE){
+
+const first = cards[0].cloneNode(true)
+const last = cards[cards.length-1].cloneNode(true)
+
+track.appendChild(first)
+track.insertBefore(last, cards[0])
+
+cards = Array.from(document.querySelectorAll(".fp-card"))
+index = 1
+requestAnimationFrame(() => updatePosition(false))
+
+}
+
+
+/* ===== MEASURE CARD ===== */
+
+function measure(){
+
+cardWidth = cards[0].offsetWidth + 40
+
+}
+
+window.addEventListener("resize",measure)
+
+
+/* ===== UPDATE POSITION ===== */
+
+function updatePosition(animated=true){
+
+if(animated) track.style.transition="transform 0.45s ease"
+else track.style.transition="none"
+
+const card = cards[index]
+
+const offset =
+card.offsetLeft
+- (track.parentElement.offsetWidth/2)
++ (card.offsetWidth/2)
+
+track.style.transform = `translateX(${-offset}px)`
+
+cards.forEach(c=>c.classList.remove("active"))
+card.classList.add("active")
+
+}
+
+
+/* ===== FIX INFINITE JUMP ===== */
+
+function fixLoop(){
+
+if(!ENABLE_INFINITE) return
+
+if(index <= 0){
+
+track.style.transition="none"
+index = cards.length-2
+updatePosition(false)
+
+}
+
+if(index >= cards.length-1){
+
+track.style.transition="none"
+index = 1
+updatePosition(false)
+
+}
+
+}
+
+
+/* ===== BUTTONS ===== */
+
+function next(){
+
+index++
+updatePosition()
+setTimeout(fixLoop,450)
+
+}
+
+function prev(){
+
+index--
+updatePosition()
+setTimeout(fixLoop,450)
+
+}
+
+nextBtn.onclick=next
+prevBtn.onclick=prev
+
+
+/* ===== DRAG START ===== */
+
+function startDrag(e){
+
+if(!ENABLE_TOUCH_PHYSICS) return
+
+isDragging=true
+track.classList.add("dragging")
+
+startX = e.type.includes("mouse")
+? e.pageX
+: e.touches[0].clientX
+
+velocity=0
+track.style.transition="none"
+
+}
+
+
+/* ===== DRAG MOVE ===== */
+
+function drag(e){
+
+if(!isDragging) return
+
+currentX = e.type.includes("mouse")
+? e.pageX
+: e.touches[0].clientX
+
+dragOffset = currentX-startX
+
+const card = cards[index]
+
+const baseOffset =
+card.offsetLeft
+- (track.parentElement.offsetWidth/2)
++ (card.offsetWidth/2)
+
+track.style.transform =
+`translateX(${-baseOffset + dragOffset}px)`
+
+velocity = dragOffset
+
+}
+
+
+/* ===== DRAG END ===== */
+
+function endDrag(){
+
+if(!isDragging) return
+isDragging=false
+
+track.classList.remove("dragging")
+
+if(Math.abs(dragOffset) > cardWidth/4){
+
+if(dragOffset < 0) next()
+else prev()
+
+}
+else{
+
+updatePosition()
+
+}
+
+
+/* ===== MOMENTUM ===== */
+
+if(ENABLE_MOMENTUM){
+
+if(Math.abs(velocity)>120){
+
+if(velocity<0) next()
+else prev()
+
+}
+
+}
+
+dragOffset=0
+
+}
+
+
+/* ===== EVENTS ===== */
+
+track.addEventListener("mousedown",startDrag)
+track.addEventListener("touchstart",startDrag)
+
+window.addEventListener("mousemove",drag)
+window.addEventListener("touchmove",drag)
+
+window.addEventListener("mouseup",endDrag)
+window.addEventListener("touchend",endDrag)
+
+
+/* ===== INIT ===== */
+
+window.addEventListener("load", () => {
+
+measure()
+
+requestAnimationFrame(() => {
+updatePosition(false)
+})
+
+})
